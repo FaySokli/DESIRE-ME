@@ -1,7 +1,7 @@
 cd src
 
-DATASETS='nq-train hotpotqa fever'
-MODELS='cocodr-base-msmarco contriever cocodr-large-msmarco'
+DATASETS='nq-train' # hotpotqa fever'
+MODELS='contriever' #cocodr-base-msmarco cocodr-large-msmarco'
 
 for DATASET in $DATASETS;
 do
@@ -23,15 +23,15 @@ do
     done
 done
 
-DATASET='climate-fever'
+# DATASET='climate-fever'
 
-for MODEL in $MODELS;
-do
-    python3 2_create_embedding.py model=$MODEL dataset=$DATASET testing=$DATASET training.batch_size=16
+# for MODEL in $MODELS;
+# do
+#     python3 2_create_embedding.py model=$MODEL dataset=$DATASET testing=$DATASET training.batch_size=16
 
-    python3 3_test.py model=$MODEL dataset=$DATASET testing=$DATASET model.init.specialized_mode='desireme' 
-    python3 3_test.py model=$MODEL dataset=$DATASET testing=$DATASET model.init.specialized_mode='rand' 
-    python3 4_beir_eval.py model=$MODEL dataset=$DATASET testing=$DATASET # zero shot model
+#     python3 3_test.py model=$MODEL dataset=$DATASET testing=$DATASET model.init.specialized_mode='desireme' 
+#     python3 3_test.py model=$MODEL dataset=$DATASET testing=$DATASET model.init.specialized_mode='rand' 
+#     python3 4_beir_eval.py model=$MODEL dataset=$DATASET testing=$DATASET # zero shot model
     
-    python3 5_significance_test.py dataset=$DATASET testing=$DATASET
-done
+#     python3 5_significance_test.py dataset=$DATASET testing=$DATASET
+# done

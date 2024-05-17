@@ -90,7 +90,7 @@ def main(wiki_folder, dataset):
         os.remove(os.path.join(pathlib.Path(__file__).parent.absolute(), f"{dataset}.zip"))
 
     corpus_file = f'{dataset}/corpus.jsonl'
-    out_corpus = f'{dataset}/wiki_corpus.jsonl'
+    out_corpus = f'{dataset}/wiki_corpus.json'
 
     category_to_label = {
         "Business": 0, "Communication": 1, "Concepts": 2, "Culture": 3, "Economy": 4, "Education": 5, "Energy": 6, "Engineering": 7, 

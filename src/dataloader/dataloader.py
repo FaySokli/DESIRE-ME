@@ -29,12 +29,12 @@ class LoadTrainNQData(torch.utils.data.Dataset):
         
         pos_category = pos_doc.get('category', [])
         category_tensor = torch.zeros(len(self.cat_to_label))
-        
-        for cat in pos_category:
-            category_tensor[self.cat_to_label[cat]] = 1
+        # for cat in pos_category:
+        category_tensor[self.cat_to_label[pos_category]] = 1
         return {
             'question': query_text,
-            'pos_text': pos_doc.get('title', '').lower() + ' ' + pos_doc['text'].lower(),
+            'pos_text': pos_doc.get('title', '').lower() + '[]' + pos_doc['text'].lower(),
+            'id': query['_id'],
             'pos_category': category_tensor 
         }
         
@@ -54,5 +54,6 @@ def in_batch_negative_collate_fn(batch):
     return {
         'question': question_texts,
         'pos_text': [x.get('pos_text') for x in batch],
+        'id': [x.get('query_id') for x in batch],
         'pos_category': [x.get('pos_category') for x in batch],
     }

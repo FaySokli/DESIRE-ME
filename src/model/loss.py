@@ -25,10 +25,10 @@ class MultipleRankingLoss(nn.Module):
         
         # import ipdb
         # ipdb.set_trace()
-        cls_loss = self.BCELoss(anchors_pred, anchors_classes)
+        # cls_loss = self.BCELoss(anchors_pred, anchors_classes)
         pw_loss = self.CELoss(pw_similarity, labels)
         
-        return pw_loss, cls_loss, .5 * pw_loss + .5 * cls_loss
+        return pw_loss, pw_loss, pw_loss
     
     def val_forward(
         self,
@@ -40,10 +40,10 @@ class MultipleRankingLoss(nn.Module):
         pw_similarity = torch.mm(anchors, positives.T)
         labels = torch.tensor([x for x in range(anchors.shape[0])], device=self.device)
         
-        cls_loss = self.BCELoss(anchors_pred, anchors_classes)
+        # cls_loss = self.BCELoss(anchors_pred, anchors_classes)
         pw_loss = self.CELoss(pw_similarity, labels)
         
-        return pw_loss, cls_loss, .5 * pw_loss + .5 * cls_loss, (pw_similarity.argmax(dim=1, keepdim=True).squeeze() == labels)
+        return pw_loss, pw_loss, pw_loss, (pw_similarity.argmax(dim=1, keepdim=True).squeeze() == labels)
 
 
 class MultipleRankingLossBiEncoder(nn.Module):

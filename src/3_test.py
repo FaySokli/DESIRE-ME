@@ -5,6 +5,7 @@ import os
 import hydra
 import torch
 import tqdm
+import pandas as pd
 from indxr import Indxr
 from omegaconf import DictConfig, OmegaConf
 from transformers import AutoModel, AutoTokenizer
@@ -22,7 +23,7 @@ def get_bert_rerank(data, model, doc_embedding, bm25_runs, id_to_index):
     model.eval()
     for d in tqdm.tqdm(data, total=len(data)):
         with torch.no_grad():
-            q_embedding = model.query_encoder_with_context([d['text']])
+            q_embedding = model.query_encoder_with_context([d['text']], [d['query_id']])
             
         bm25_docs = list(bm25_runs[d['_id']].keys())
         d_embeddings = doc_embedding[torch.tensor([int(id_to_index[x]) for x in bm25_docs])]
@@ -38,7 +39,7 @@ def get_full_bert_rank(data, model, doc_embedding, id_to_index, k=1000):
     model.eval()
     for d in tqdm.tqdm(data, total=len(data)):
         with torch.no_grad():
-            q_embedding = model.query_encoder_with_context([d['text']])
+            q_embedding = model.query_encoder_with_context([d['text']], [d['_id']])
         
         bert_scores = torch.einsum('xy, ly -> x', doc_embedding, q_embedding)
         index_sorted = torch.argsort(bert_scores, descending=True)
@@ -101,16 +102,26 @@ def main(cfg: DictConfig):
     data = Indxr(cfg.testing.query_path, key_id='_id')
     bert_run = get_full_bert_rank(data, model, doc_embedding, id_to_index, 1000)
         
-    ranx_qrels = Qrels.from_file(cfg.testing.qrels_path)
+    # ranx_qrels = Qrels.from_file(cfg.testing.qrels_path)
+    qrel_df = pd.read_csv(cfg.testing.qrels_path, sep='\t')
+    ranx_qrels = {}
+    for index, row in qrel_df.iterrows():
+        q_id = str(row['query-id']) 
+        
+        if not q_id in ranx_qrels:
+            ranx_qrels[q_id] = {}
+        
+        ranx_qrels[q_id][str(row['corpus-id'])] = row['score']
 
+    ranx_qrels = Qrels(ranx_qrels)
     ranx_run = Run(bert_run, 'FullRun')
     ranx_run.save(f'{cfg.dataset.runs_dir}/{cfg.model.init.save_model}_{prefix}.lz4')
-    
+
     models = [ranx_run]
     evaluation_report = compare(
         ranx_qrels,
         models,
-        ['map@100', 'mrr@10', 'recall@100', 'ndcg@10', 'precision@1', 'ndcg@3']
+        ['map@100', 'mrr@10', 'recall@100', 'ndcg@10', 'precision@1', 'ndcg@3'],
     )
 
     print(evaluation_report)

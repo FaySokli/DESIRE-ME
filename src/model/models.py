@@ -6,6 +6,8 @@ from torch import max as t_max
 from torch import sigmoid
 from torch import einsum
 from torch.nn import functional as F
+import json
+import sys
 
 
 class QuerySpecializer(nn.Module):
@@ -69,24 +71,19 @@ class SpecialziedBiEncoder(nn.Module):
         
     
     def init_cls(self):
-        self.cls_1 = nn.Linear(self.hidden_size, self.hidden_size*2).to(self.device)
-        self.cls_2 = nn.Linear(self.hidden_size*2, self.hidden_size*4).to(self.device)
-        self.cls_3 = nn.Linear(self.hidden_size*4, self.num_classes).to(self.device)
+        with open('/home/ubuntu/esokli/DESIRE-ME/src/model/queries_to_logits_nq.json', 'r') as f:
+            self.queries_to_logits = json.load(f)
+        # self.cls_1 = nn.Linear(self.hidden_size, self.hidden_size*2).to(self.device)
+        # self.cls_2 = nn.Linear(self.hidden_size*2, self.hidden_size*4).to(self.device)
+        # self.cls_3 = nn.Linear(self.hidden_size*4, self.num_classes).to(self.device)
         
     
-    def query_encoder_with_context(self, sentences):
+    def query_encoder_with_context(self, sentences, query_ids):
         query_embedding = self.query_encoder(sentences)
-        query_class = self.cls(query_embedding)
+        query_class = self.cls(query_ids)
         query_embedding = self.query_embedder(query_embedding, query_class)
         return query_embedding
 
-
-    def query_encoder_with_context_val(self, sentences):
-        query_embedding = self.query_encoder(sentences)
-        query_class = self.cls(query_embedding)
-        query_embedding = self.val_query_embedder(query_embedding, query_class)
-        return query_embedding
-        
 
     def doc_encoder(self, sentences):
         encoded_input = self.tokenizer(sentences, padding=True, truncation=True, max_length=self.max_tokens, return_tensors='pt').to(self.device)
@@ -96,18 +93,24 @@ class SpecialziedBiEncoder(nn.Module):
         return self.pooling(embeddings, encoded_input['attention_mask'])
         
 
-    def cls(self, query_embedding):
-        x1 = F.relu(self.cls_1(query_embedding))
-        x2 = F.relu(self.cls_2(x1))
-        out = self.cls_3(x2)
+    # def cls(self, query_embedding):
+    #     x1 = F.relu(self.cls_1(query_embedding))
+    #     x2 = F.relu(self.cls_2(x1))
+    #     out = self.cls_3(x2)
         
+    #     return out
+
+    def cls(self, query_ids):
+        out = torch.stack([torch.tensor(self.queries_to_logits[q_id]) for q_id in query_ids], dim=0).to(self.device)
         return out
     
 
     def forward(self, data):
         with torch.no_grad():
             query_embedding = self.query_encoder(data[0])
-        query_class = self.cls(query_embedding)
+        
+        # query_class = self.cls(query_embedding)
+        query_class = self.cls(data[2])
         
         query_embedding = self.query_embedder(query_embedding, query_class)
         
@@ -120,7 +123,7 @@ class SpecialziedBiEncoder(nn.Module):
     def val_forward(self, data):
         with torch.no_grad():
             query_embedding = self.query_encoder(data[0])
-            query_class = self.cls(query_embedding)
+            query_class = self.cls(data[2])
         
 
             query_embedding = self.query_embedder(query_embedding, query_class)

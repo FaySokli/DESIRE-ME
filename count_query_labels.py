@@ -11,7 +11,7 @@ if 'nq-train' in data_folder:
 else:
     queries = Indxr(f'{data_folder}/train_queries.jsonl', key_id='_id')
 
-corpus = Indxr(f'{data_folder}/wiki_corpus.jsonl', key_id='_id')
+corpus = Indxr(f'{data_folder}/wiki_corpus.json', key_id='_id')
 
 qrel_df = pd.read_csv(f'{data_folder}/qrels/train.tsv', sep='\t')
 qrels = {}

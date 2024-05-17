@@ -48,7 +48,7 @@ def train(train_data, model, optimizer, loss_fn, batch_size, epoch, device):
     optimizer.zero_grad()
     for _, batch in enumerate(train_data):
         with torch.cuda.amp.autocast():
-            output = model((batch['question'], batch['pos_text']))
+            output = model((batch['question'], batch['pos_text'], batch['id']))
             triple_loss, ce_loss, loss_val = loss_fn(
                 batch['pos_category'].to(device), output[0],
                 output[1], output[2]
@@ -104,7 +104,7 @@ def validate(val_data, model, loss_fn, batch_size, epoch, device):
     for _, batch in enumerate(val_data):
         with torch.no_grad():
             with torch.cuda.amp.autocast():
-                output = model.val_forward((batch['question'], batch['pos_text']))
+                output = model.val_forward((batch['question'], batch['pos_text'], batch['id']))
                 triple_loss, ce_loss, loss_val, sim_correct = loss_fn.val_forward(
                     batch['pos_category'].to(device), output[0],
                     output[1], output[2]
@@ -220,8 +220,8 @@ def main(cfg: DictConfig) -> None:
     
     for epoch in tqdm.tqdm(range(max_epoch)):
         model.train()
-        average_loss = train(train_data, model, optimizer, loss_fn, batch_size, epoch + 1, cfg.model.init.device)
-        logging.info("TRAIN EPOCH: {:3d}, Average Loss: {:.5e}".format(epoch + 1, average_loss))
+        # average_loss = train(train_data, model, optimizer, loss_fn, batch_size, epoch + 1, cfg.model.init.device)
+        # logging.info("TRAIN EPOCH: {:3d}, Average Loss: {:.5e}".format(epoch + 1, average_loss))
         
         model.eval()
         val_loss, average_precision, average_recall = validate(val_data, model, loss_fn, batch_size, epoch + 1, cfg.model.init.device)

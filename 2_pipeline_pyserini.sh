@@ -5,7 +5,7 @@ WIKI_FOLDER="wikipedia_data"
 python3  add_wikicategory.py  --wiki_folder  $WIKI_FOLDER  --dataset  $DATA_FOLDER
 
 # Get BM25 and labeling for nq, hotpotqa, fever and climate-fever
-DATA_FOLDERS='nq hotpotqa fever climate-fever'
+DATA_FOLDERS='nq' # hotpotqa fever climate-fever'
 for DATA_FOLDER in $DATA_FOLDERS;
 do
     python3  create_pyserini_data.py  --data_folder  $DATA_FOLDER  --dataset  $DATA_FOLDER
