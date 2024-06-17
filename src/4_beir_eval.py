@@ -26,7 +26,8 @@ def main(cfg: DictConfig):
     #### /print debug information to stdout
     
     dataset = cfg.testing.name
-    model_name = cfg.model.doc_model
+    print(cfg)
+    model_name = cfg.model.init.doc_model
     score_function = 'cos_sim' if cfg.model.init.normalize else 'dot'
     pooling_function = cfg.model.init.aggregation_mode
     

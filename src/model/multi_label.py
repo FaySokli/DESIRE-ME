@@ -212,45 +212,75 @@ else:
 # passages_filtered = passages[passages['passage_param'] == 'passage_text']
 
 ######################################################
+# NATURAL QUESTIONS
 ######################################################
 from datasets import load_dataset
-dataset = load_dataset("json", data_files="nq/queries.jsonl")
-nqq = dataset['train'].to_pandas()
+# dataset = load_dataset("json", data_files="nq/queries.jsonl")
+# nqq = dataset['train'].to_pandas()
+
+# # Predict labels for the 'queries' and 'passages' datasets
+# logger.info("Predicting logits for queries...")
+# # queries['label'] = classifier.predict_logits(queries['query_id'], queries['query'])
+# queries_to_logits = classifier.predict_logits(nqq['_id'].astype(str), nqq['text'])
+# queries_to_logits = {str(k): v for k, v in queries_to_logits.items()}
+# logger.info("Saving queries results...")
+# with open('/home/ubuntu/esokli/DESIRE-ME/nq/queries_to_logits_nq.json', 'w') as f:
+#     json.dump(queries_to_logits, f, indent=2)
+# # queries.to_csv('queries_with_logits.csv', index=False)
+
+# dataset = load_dataset("json", data_files="/home/ubuntu/esokli/DESIRE-ME/nq/wiki_corpus.jsonl")
+# nq = dataset['train'].to_pandas()
+# nq = nq.drop(columns=['metadata'])
+# nq = nq.drop(columns=['category'])
+
+# logger.info("Predicting labels for docs...")
+# nq.reset_index(drop=True, inplace=True)
+# nq_docs_labelled = classifier.predict_labels(nq['_id'].astype(str), nq['text'])
+# logger.info("Saving docs results...")
+# with open('/home/ubuntu/esokli/DESIRE-ME/nq/wiki_corpus_nq.json', 'w') as f:
+#     json.dump(nq_docs_labelled, f, indent=2)
+
+# # Merge the predicted labels back into the original 'passages' DataFrame
+# logger.info("Merging predicted labels for passages...")
+# passages = passages.merge(passages_filtered[['label']], left_index=True, right_index=True, how='left')
+
+# logger.info("Saving passages results...")
+# passages.to_csv('passages_with_labels.csv', index=False)
+
+# logger.info("Done.")
+
+######################################################
+# NFCORPUS
+######################################################
+
+dataset = load_dataset("json", data_files="/home/ubuntu/esokli/DESIRE-ME/nfcorpus/nfcorpus_queries.json")
+nfq = dataset['train'].to_pandas()
 
 # Predict labels for the 'queries' and 'passages' datasets
 logger.info("Predicting logits for queries...")
 # queries['label'] = classifier.predict_logits(queries['query_id'], queries['query'])
-queries_to_logits = classifier.predict_logits(nqq['_id'].astype(str), nqq['text'])
+queries_to_logits = classifier.predict_logits(nfq['_id'].astype(str), nfq['text'])
 queries_to_logits = {str(k): v for k, v in queries_to_logits.items()}
 logger.info("Saving queries results...")
-with open('/home/ubuntu/esokli/DESIRE-ME/nq/queries_to_logits_nq.json', 'w') as f:
+with open('/home/ubuntu/esokli/DESIRE-ME/nfcorpus/queries_to_logits_nfcorpus.json', 'w') as f:
     json.dump(queries_to_logits, f, indent=2)
 # queries.to_csv('queries_with_logits.csv', index=False)
 
-######################################################
-######################################################
-
-from datasets import load_dataset
-dataset = load_dataset("json", data_files="/home/ubuntu/esokli/DESIRE-ME/nq/wiki_corpus.jsonl")
-nq = dataset['train'].to_pandas()
-nq = nq.drop(columns=['metadata'])
-nq = nq.drop(columns=['category'])
+dataset = load_dataset("json", data_files="/home/ubuntu/esokli/DESIRE-ME/nfcorpus/nfcorpus_docs.json")
+nfd = dataset['train'].to_pandas()
 
 logger.info("Predicting labels for docs...")
-nq.reset_index(drop=True, inplace=True)
-nq_docs_labelled = classifier.predict_labels(nq['_id'].astype(str), nq['text'])
+nfd_docs_labelled = classifier.predict_labels(nfd['_id'].astype(str), nfd['text'])
 logger.info("Saving docs results...")
-with open('/home/ubuntu/esokli/DESIRE-ME/nq/wiki_corpus_nq.json', 'w') as f:
-    json.dump(nq_docs_labelled, f, indent=2)
+with open('/home/ubuntu/esokli/DESIRE-ME/nfcorpus/wiki_corpus_nfd.json', 'w') as f:
+    json.dump(nfd_docs_labelled, f, indent=2)
 
-# Merge the predicted labels back into the original 'passages' DataFrame
-logger.info("Merging predicted labels for passages...")
-passages = passages.merge(passages_filtered[['label']], left_index=True, right_index=True, how='left')
-
-logger.info("Saving passages results...")
-passages.to_csv('passages_with_labels.csv', index=False)
-
-logger.info("Done.")
+import matplotlib.pyplot as plt
+df = pd.DataFrame(nfd_docs_labelled)
+category_counts = df['category'].value_counts()
+category_counts.plot(kind='bar')
+plot_file = '/home/ubuntu/esokli/DESIRE-ME/nfcorpus/predicted_doc_labels_distribution.png'
+plt.savefig(plot_file)
 
 
 # tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased', problem_type="multi_label_classification")

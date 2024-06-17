@@ -1,0 +1,4 @@
+2024-06-15 12:27:02,301 root INFO Model: facebook/contriever-msmarco, lr: 1.00e-04, batch_size: 512, epochs: 30
+2024-06-15 12:27:02,301 root INFO Normalize: False, specialized mode: zeros, pooling mode: mean
+2024-06-15 12:40:01,471 root INFO Model: facebook/contriever-msmarco, lr: 1.00e-04, batch_size: 512, epochs: 30
+2024-06-15 12:40:01,472 root INFO Normalize: False, specialized mode: zeros, pooling mode: mean
