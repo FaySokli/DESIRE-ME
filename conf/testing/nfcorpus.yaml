@@ -1,0 +1,9 @@
+name: nfcorpus
+data_dir: ../nfcorpus
+corpus_path: ${testing.data_dir}/nfcorpus_docs.jsonl
+query_path: ${testing.data_dir}/nfcorpus_queries.jsonl
+qrels_path: ${testing.data_dir}/test.binary.qrel
+bm25_run_path: ${testing.data_dir}/bm25_run.lz4
+category_to_label: ${testing.data_dir}/category_to_label.json
+embedding_dir: ${dataset.output_dir}/embeddings
+rerank: False
