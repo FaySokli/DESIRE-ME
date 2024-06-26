@@ -113,6 +113,8 @@ def main(cfg: DictConfig):
         
         ranx_qrels[q_id][str(row['corpus-id'])] = row['score']
 
+    # import ipdb
+    # ipdb.set_trace()
     ranx_qrels = Qrels(ranx_qrels)
     ranx_run = Run(bert_run, 'FullRun')
     ranx_run.save(f'{cfg.dataset.runs_dir}/{cfg.model.init.save_model}_{prefix}.lz4')
@@ -122,6 +124,7 @@ def main(cfg: DictConfig):
         ranx_qrels,
         models,
         ['map@100', 'mrr@10', 'recall@100', 'ndcg@10', 'precision@1', 'ndcg@3'],
+        make_comparable=True
     )
 
     print(evaluation_report)

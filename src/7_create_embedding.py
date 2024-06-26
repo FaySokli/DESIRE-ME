@@ -50,18 +50,18 @@ def main(cfg: DictConfig):
         device=cfg.model.init.device
     )
     logging.info(f'Loading model from {cfg.model.init.save_model}.pt')
-    if os.path.exists(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}.pt'):
-        model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}.pt'))
-    else:
-        logging.info('New model CLS requested, creating new checkpoint')
-        torch.save(model.state_dict(), f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}.pt')
+    # if os.path.exists(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}.pt'):
+    #     model.load_state_dict(torch.load(f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}.pt'))
+    # else:
+    logging.info('New model CLS requested, creating new checkpoint')
+    torch.save(model.state_dict(), f'{cfg.dataset.model_dir}/{cfg.model.init.save_model}.pt')
 
     
     index = 0
     texts = []
     id_to_index = {}
-    with open(cfg.testing.bm25_run_path, 'r') as f:
-        bm25_run = json.load(f)
+    # with open(cfg.testing.bm25_run_path, 'r') as f:
+    #     bm25_run = json.load(f)
     
     model.eval()
     embedding_matrix = torch.zeros(len(corpus), cfg.model.init.embedding_size).float()

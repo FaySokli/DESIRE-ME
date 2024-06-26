@@ -1,6 +1,6 @@
 data_dir: ../nfcorpus
-corpus_path: ${dataset.data_dir}/nfcorpus_docs.jsonl
-query_path: ${dataset.data_dir}/nfcorpus_queries.jsonl
+corpus_path: ${dataset.data_dir}/wiki_corpus_nfd.jsonl
+query_path: ${dataset.data_dir}/queries_train.jsonl
 qrels_path: ${dataset.data_dir}/train.binary.qrel
 category_to_label: ${dataset.data_dir}/category_to_label.json
 val_split: 0.1

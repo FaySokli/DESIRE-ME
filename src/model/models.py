@@ -71,7 +71,7 @@ class SpecialziedBiEncoder(nn.Module):
         
     
     def init_cls(self):
-        with open('/home/ubuntu/esokli/DESIRE-ME/src/model/queries_to_logits_nq.json', 'r') as f:
+        with open('/home/ubuntu/esokli/DESIRE-ME/src/model/queries_to_logits_nfcorpus.json', 'r') as f:
             self.queries_to_logits = json.load(f)
         # self.cls_1 = nn.Linear(self.hidden_size, self.hidden_size*2).to(self.device)
         # self.cls_2 = nn.Linear(self.hidden_size*2, self.hidden_size*4).to(self.device)

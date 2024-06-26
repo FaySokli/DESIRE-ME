@@ -1,7 +1,7 @@
 name: nfcorpus
 data_dir: ../nfcorpus
-corpus_path: ${testing.data_dir}/nfcorpus_docs.jsonl
-query_path: ${testing.data_dir}/nfcorpus_queries.jsonl
+corpus_path: ${testing.data_dir}/wiki_corpus_nfd.jsonl
+query_path: ${testing.data_dir}/queries_test.jsonl
 qrels_path: ${testing.data_dir}/test.binary.qrel
 bm25_run_path: ${testing.data_dir}/bm25_run.lz4
 category_to_label: ${testing.data_dir}/category_to_label.json

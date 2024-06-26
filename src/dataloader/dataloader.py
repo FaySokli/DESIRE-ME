@@ -26,7 +26,9 @@ class LoadTrainNQData(torch.utils.data.Dataset):
         pos_ids = set(self.qrels[query['_id']])
         pos_id = str(random.choice(list(pos_ids)))
         pos_doc = self.corpus.get(pos_id)
-        
+        # import ipdb
+        # ipdb.set_trace()
+
         pos_category = pos_doc.get('category', [])
         category_tensor = torch.zeros(len(self.cat_to_label))
         # for cat in pos_category:
